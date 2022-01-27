@@ -37,7 +37,7 @@ output = {p: [] for p, s in sortedtotals}
 for player in output:
     for opp in output:
         res = table[player].get(opp)
-        if res:
+        if res or res == 0:
             output[player].append(res)
         else:
             output[player].append('-')

@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+import argparse
 import chess.pgn
 import pandas as pd
 from collections import defaultdict
@@ -13,9 +14,18 @@ def convert(header):
         return ((white, 0.5), (black, 0.5))
     return ((white, int(res[0])), (black, int(res[-1])))
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input', help="PGN file")
+    parser.add_argument('-o', '--output', default='standings.md')
+
+    return parser.parse_args()
+
+
+args = parse_args()
 
 headers = []
-with open("lichess_broadcast_tata-steel-masters-2022_IsMvGXWN_2022.01.26.pgn") as pgn:
+with open(args.input) as pgn:
     for header in iter(lambda: chess.pgn.read_headers(pgn), None):
         headers.append(header)
 
@@ -48,4 +58,4 @@ for player in output:
 df = pd.DataFrame.from_dict(output).transpose()
 df.rename(columns={x: x + 1 for x in df.columns}, inplace=True)
 df.rename(columns={df.columns[-1]: 'Total'}, inplace=True)
-df.to_markdown(buf="standings")
+df.to_markdown(buf=args.output)
